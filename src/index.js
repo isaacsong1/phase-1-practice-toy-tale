@@ -1,27 +1,19 @@
 let addToy = false;
+const toyFormContainer = document.querySelector(".container");
 
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector("#new-toy-btn");
-  const toyFormContainer = document.querySelector(".container");
   toyFormContainer.addEventListener('submit', event => handleSubmit(event));
   addBtn.addEventListener("click", () => {
     // hide & seek with the form
     addToy = !addToy;
     if (addToy) {
       toyFormContainer.style.display = "block";
-      console.log("Open form menu");
     } else {
       toyFormContainer.style.display = "none";
-      console.log("Close form menu")
     }
   });
 });
-
-//! Fetch data and render to page
-fetch("http://localhost:3000/toys")
-  .then(resp => resp.json())
-  .then(toyObj =>  toyObj.forEach(toy => renderToy(toy)))
-  .catch(error => alert(`You ran into this error: ${error.textContent}`))
 
 //! Helper Functions
 function renderToy(toy) {
@@ -36,14 +28,14 @@ function renderToy(toy) {
   const likes = document.createElement("p");
   likes.textContent = `${toy.likes} Likes`;
   const btn = document.createElement("button");
+  btn.className = "like-btn";
+  btn.id = toy.id;
+  btn.textContent = "Like ❤️";
   btn.addEventListener('click', () => {
     toy.likes += 1;
     likes.textContent = `${toy.likes} Likes`;
     updateLikes(toy);
   });
-  btn.className = "like-btn";
-  btn.textContent = "Like ❤️";
-
   div.append(h2, image, likes, btn);
   document.querySelector("#toy-collection").append(div);
 }
@@ -78,6 +70,9 @@ function handleSubmit(event) {
       }
     })
     .catch(error => alert(error))
+
+    event.target.reset();
+    toyFormContainer.style.display = "none";
   } else {
     alert("You must fill out the boxes!");
   }
@@ -95,3 +90,9 @@ function updateLikes(toy) {
     })
   })
 }
+
+//! Fetch data and render to page
+fetch("http://localhost:3000/toys")
+  .then(resp => resp.json())
+  .then(toyObj =>  toyObj.forEach(toy => renderToy(toy)))
+  .catch(error => alert(`You ran into this error: ${error.textContent}`))
