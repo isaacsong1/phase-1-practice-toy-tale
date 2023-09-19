@@ -36,11 +36,18 @@ function renderToy(toy) {
   const likes = document.createElement("p");
   likes.textContent = `${toy.likes} Likes`;
   const btn = document.createElement("button");
+  btn.addEventListener('click', () => {
+    toy.likes += 1;
+    likes.textContent = `${toy.likes} Likes`;
+    updateLikes(toy);
+  });
   btn.className = "like-btn";
   btn.textContent = "Like ❤️";
+
   div.append(h2, image, likes, btn);
   document.querySelector("#toy-collection").append(div);
 }
+
 
 function validateToyData(valuesArr) {
   return valuesArr.every(el => el.trim() !== "");
@@ -53,7 +60,7 @@ function handleSubmit(event) {
     const newToy = {
       name: event.target.name.value,
       image: event.target.image.value,
-      likes: '0 Likes',
+      likes: 0,
     }
 
     renderToy(newToy);
@@ -71,7 +78,20 @@ function handleSubmit(event) {
       }
     })
     .catch(error => alert(error))
-    } else {
-      alert("You must fill out the boxes!");
-    }
+  } else {
+    alert("You must fill out the boxes!");
+  }
+
+}
+
+function updateLikes(toy) {
+  fetch(`http://localhost:3000/toys/${toy.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      likes: toy.likes
+    })
+  })
 }
